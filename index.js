@@ -2,6 +2,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const dotenv = require('dotenv');
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
 
 dotenv.config()
 
@@ -10,6 +11,11 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+const options = {
+	key: fs.readFileSync('./ssl/key.pem'),
+	cert: fs.readFileSync('./ssl/cert.pem'),
+};
 
 const bot = new TelegramBot(token, { polling: true });
 
@@ -52,4 +58,7 @@ app.post('/course-form', async (req, res) => {
 
 const PORT = 8000;
 
-app.listen(PORT, () => console.log('server started on PORT ' + PORT))
+https.createServer(options, app).listen(PORT, () => {
+	console.log(`Server started :${PORT} PORT`)
+})
+// app.listen(PORT, () => console.log('server started on PORT ' + PORT))
