@@ -1,64 +1,75 @@
-const TelegramBot = require('node-telegram-bot-api');
-const dotenv = require('dotenv');
-const express = require('express');
-const cors = require('cors');
-const fs = require('fs');
+import dotenv from "dotenv";
+import express from "express";
+import fileUpload from 'express-fileupload';
+import cors from "cors";
+import fs from "fs";
+import mongoose from "mongoose";
+import https from "https";
+import cookieParser from 'cookie-parser';
+import bodyParser from "body-parser";
+
+import CronService from "./Services/CronService.js";
+
+import apiRouter from "./Routers/apiRouter.js";
 
 dotenv.config()
 
-const token = "6067404818:AAHWBM7g1jfQjkbyPVu-K7rCIotIptRZcIo";
+const token = process.env.BOT_TOKEN;
 const app = express();
 
-app.use(express.json());
-app.use(cors());
+app.use(express.json())
+app.use(cookieParser())
+app.use(fileUpload({}))
+app.use(cors({
+	credentials: true,
+	origin: true
+}));
+app.use(bodyParser.raw({ type: 'application/octet-stream', limit: '10000mb' }));
+app.use(express.static('storage/public'))
+
+app.use("/api", apiRouter)
 
 const options = {
 	key: fs.readFileSync('./ssl/key.pem'),
 	cert: fs.readFileSync('./ssl/cert.pem'),
 };
 
-const bot = new TelegramBot(token, { polling: true });
+// const bot = new TelegramBot(token, { polling: true });
 
-bot.on('message', async (msg) => {
-	const chatId = msg.chat.id;
-	const text = msg.text;
+// bot.on('message', async (msg) => {
+// 	const chatId = msg.chat.id;
+// 	const text = msg.text;
 
-	if (text === "/start") {
-		await bot.sendMessage(chatId, 'Ниже появится кнопка для покупки курсов', {
-			reply_markup: {
-				inline_keyboard: [
-					[{ text: "Купить курс", web_app: { url: "https://bot.iomp.ru" } }]
-				]
-			}
-		});
-	}
-});
+// 	if (text === "/start") {
+// 		await bot.sendMessage(chatId, 'Ниже появится кнопка для покупки курсов', {
+// 			reply_markup: {
+// 				inline_keyboard: [
+// 					[{ text: "Купить курс", web_app: { url: "https://bot.iomp.ru" } }]
+// 				]
+// 			}
+// 		});
+// 	}
+// });
 
-app.post('/course-form', async (req, res) => {
-	const { title, queryId } = req.body
+const PORT = 5000;
 
-	console.log(title, queryId)
-
+const start = async () => {
 	try {
+		await mongoose.connect(process.env.DB_URL, { useUnifiedTopology: true, useNewUrlParser: true })
 
-		await bot.answerWebAppQuery(queryId, {
-			type: 'article',
-			id: queryId,
-			title: 'Успешная покупка',
-			input_message_content: {
-				message_text: ` Вы записались на курс: ${title}`
-			}
+		https.createServer(options, app).listen(PORT, () => {
+			CronService.startCronTask()
+			
+			console.log(`Server started :${PORT} PORT`)
 		})
+		// app.listen(PORT, () => {
+		// 	CronService.startCronTask()
 
-		return res.status(200).json({});
+		// 	console.log(`Server started :${PORT} PORT`)
+		// })
 	} catch (e) {
-		return res.status(500).json({})
+		console.log(e)
 	}
-})
+}
 
-const PORT = 8000;
-
-https.createServer(options, app).listen(PORT, () => {
-	console.log(`Server started :${PORT} PORT`)
-})
-// app.listen(PORT, () => console.log('server started on PORT ' + PORT))
+start()
