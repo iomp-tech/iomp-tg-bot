@@ -11,6 +11,14 @@ const Course = new mongoose.Schema({
 	title: { type: String, default: "" },
 	description: { type: String, default: "" },
 	master: { type: String, default: "" },
+	btnText: { type: String, default: "" },
+
+	programm: {
+		title: { type: String, default: "" },
+		description: { type: String, default: "" },
+
+		items: [{ subtitle: { type: String, default: "" }, title: { type: String, default: "" }, description: { type: String, default: "" } }]
+	},
 
 	formTitle: { type: String, default: "" },
 

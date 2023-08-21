@@ -18,6 +18,8 @@ class CourseService {
 			courseData.imageDemo = file
 		}
 
+		courseData.programm = JSON.parse(courseData.programm)
+
 		courseData.image = file
 
 		const course = await Course.create(courseData)
@@ -54,6 +56,8 @@ class CourseService {
 
 			courseData.imageDemo = file
 		}
+
+		courseData.programm = JSON.parse(courseData.programm)
 
 		const newCourse = await Course.findByIdAndUpdate(_id, courseData, { new: true })
 
@@ -99,7 +103,7 @@ class CourseService {
 	async getAll() {
 		// const pageNum = (Math.abs(page) || 1) - 1;
 		const coursesData = await Course.find({ isHidden: false }).sort({ _id: -1 })
-			// .limit(parseInt(limit)).skip(parseInt(limit) * pageNum)
+		// .limit(parseInt(limit)).skip(parseInt(limit) * pageNum)
 
 		const courses = []
 

@@ -57,16 +57,16 @@ const start = async () => {
 	try {
 		await mongoose.connect(process.env.DB_URL, { useUnifiedTopology: true, useNewUrlParser: true })
 
-		https.createServer(options, app).listen(PORT, () => {
-			CronService.startCronTask()
-			
-			console.log(`Server started :${PORT} PORT`)
-		})
-		// app.listen(PORT, () => {
+		// https.createServer(options, app).listen(PORT, () => {
 		// 	CronService.startCronTask()
-
+			
 		// 	console.log(`Server started :${PORT} PORT`)
 		// })
+		app.listen(PORT, () => {
+			CronService.startCronTask()
+
+			console.log(`Server started :${PORT} PORT`)
+		})
 	} catch (e) {
 		console.log(e)
 	}

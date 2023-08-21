@@ -4,6 +4,7 @@ const Timetable = new mongoose.Schema({
 	category: { type: String, default: "" },
 	title: { type: String, default: "" },
 	description: { type: String, default: "" },
+	btnText: { type: String, default: "" },
 	image: { type: String, default: "" },
 	videoUrl: { type: String, default: "" },
 
