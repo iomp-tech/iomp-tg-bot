@@ -84,7 +84,7 @@ class TimetableService {
 	async getAll() {
 		// const pageNum = (Math.abs(page) || 1) - 1;
 		const timetablesData = await Timetable.find({ isHidden: false })
-			// .sort({ _id: -1 }).limit(parseInt(limit)).skip(parseInt(limit) * pageNum)
+		// .sort({ _id: -1 }).limit(parseInt(limit)).skip(parseInt(limit) * pageNum)
 
 		const timetables = []
 
